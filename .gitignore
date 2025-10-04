@@ -1,0 +1,5 @@
+.vscode/
+AppData/
+*.log
+bin/
+obj/
