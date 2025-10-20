@@ -116,52 +116,66 @@ static int read_human_col(char player) {
 
 int main(void) {
     char board[ROWS][COLS];
-    srand((unsigned)time(NULL));   /* seed RNG */
+    srand((unsigned)time(NULL));   
     init_board(board);
 
-    /* === Mode and difficulty selection BEFORE game starts === */
+
     int vs_bot = 0;
     BotLevel bot_level = BOT_EASY;
+    char line[64];  
 
     puts("Select mode:");
     puts("  1) Human vs Human");
     puts("  2) Human vs Bot");
-    printf("Enter 1 or 2: ");
-    fflush(stdout);
-
-    {
-        char line[16];
-        if (fgets(line, sizeof line, stdin) && line[0] == '2')
-            vs_bot = 1;
+    while (1) {
+        printf("Enter 1 or 2: ");
+        fflush(stdout);
+        if (!fgets(line, sizeof line, stdin)) {
+            puts("\nInput closed. Exiting.");
+            return 0;
+        }
+        if (line[0] == '1' || line[0] == '2') {
+            vs_bot = (line[0] == '2');
+            break;
+        }
+        puts("Invalid input. Please type 1 or 2.");
     }
 
     if (vs_bot) {
         puts("Choose bot level:");
-        puts("  1) Easy   (for losers)");
-        printf("Enter 1/2/3: ");
-        fflush(stdout);
-
-        char line2[16];
-        if (fgets(line2, sizeof line2, stdin)) {
-            if (line2[0] == '2') bot_level = BOT_MEDIUM;
-            else if (line2[0] == '3') bot_level = BOT_HARD;
+        puts("  1) Easy   (random valid)");
+        puts("  2) Medium (placeholder)");
+        puts("  3) Hard   (placeholder)");
+        while (1) {
+            printf("Enter 1, 2, or 3: ");
+            fflush(stdout);
+            if (!fgets(line, sizeof line, stdin)) {
+                puts("\nInput closed. Exiting.");
+                return 0;
+            }
+            if (line[0] == '1' || line[0] == '2' || line[0] == '3') {
+                if (line[0] == '2') bot_level = BOT_MEDIUM;
+                else if (line[0] == '3') bot_level = BOT_HARD;
+                break;
+            }
+            puts("Invalid input. Please type 1, 2, or 3.");
         }
     }
 
-    /* === Game setup === */
+
     char player = 'A';
     char bot = 'B';
     print_board(board);
 
-    /* === Single main game loop === */
+
     while (1) {
         int col = -1, row = -1;
 
         if (vs_bot && player == bot) {
             /* Bot turn (currently EASY) */
             col = choose_bot_move(board, player,
-            (player == 'A' ? 'B' : 'A'),
-            bot_level);
+                        (player == 'A' ? 'B' : 'A'),
+                        bot_level);
             if (col < 0) { puts("No valid moves left."); break; }
             printf("Bot (%c) chooses column %d\n", player, col + 1);
         } else {
