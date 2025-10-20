@@ -51,12 +51,11 @@ static int count_dir(const char b[ROWS][COLS], int r, int c, int dr, int dc, cha
 }
 
 static int is_win(const char b[ROWS][COLS], int r, int c, char p) {
-    // Count both directions for each axis; need 4 in a row (incl. (r,c))
-    const int dirs[4][2] = {{0,1},{1,0},{1,1},{1,-1}}; // H, V, diag down-right, diag up-right
+    const int dirs[4][2] = {{0,1},{1,0},{1,1},{1,-1}}; 
     for (int i = 0; i < 4; i++) {
         int dr = dirs[i][0], dc = dirs[i][1];
         int total = 1 + count_dir(b, r, c,  dr,  dc, p)
-                      + count_dir(b, r, c, -dr, -dc, p);
+                        + count_dir(b, r, c, -dr, -dc, p);
         if (total >= 4) return 1;
     }
     return 0;
@@ -66,6 +65,17 @@ static int is_draw(const char b[ROWS][COLS]) {
     for (int c = 0; c < COLS; c++)
         if (b[0][c] == '.') return 0;
     return 1;
+}
+
+static int choose_random_valid_col(const char b[ROWS][COLS]) {
+    int valid[COLS];
+    int n = 0;
+    for (int c = 0; c < COLS; c++) {
+        if (b[0][c] == '.') valid[n++] = c;
+    }
+    if (n == 0) return -1; // no moves
+    int pick = rand() % n;
+    return valid[pick];
 }
 
 int main(void) {
